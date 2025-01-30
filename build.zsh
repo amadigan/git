@@ -43,7 +43,7 @@ prepare_tools() {
 		eval "$(/opt/homebrew/bin/brew shellenv)" || log_error "Failed to initialize Homebrew"
 	fi
 
-	private -a tools=(asciidoc xmlto)
+	private -a tools=(asciidoc xmlto autoconf)
 	private -a install=()
 
 	for tool in "${tools[@]}"; do
