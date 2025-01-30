@@ -5,4 +5,4 @@ BUILD_TAR=1
 BUILD_PKG=1
 BUILD_UNIVERSAL=1
 BUILD_MAN=1
-LOCALPKG_URL="https://github.com/amadigan/localpkg/releases/download/v0.0.8/localpkg"
+LOCALPKG_URL="https://github.com/amadigan/localpkg/releases/latest/download/localpkg"

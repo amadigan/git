@@ -353,7 +353,7 @@ build_tar() {
 	log_info "git.tar.xz created"
 
 	cd "${project_root}"
-	if false && command -v localpkg &>/dev/null; then
+	if command -v localpkg &>/dev/null; then
 		log_info "Executing $(command -v localpkg)"
 		localpkg build -z localpkg.zsh dist/git.localpkg
 	elif [[ -n "${LOCALPKG_URL}" ]]; then
