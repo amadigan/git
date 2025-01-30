@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: CC0-1.0
+
+name: Build Git for macOS
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release to upload build artifacts to'
+        required: true
+permissions:
+  contents: write
+jobs:
+  build-git:
+    runs-on: macos-15
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Cache Git Source
+      uses: actions/cache@v4
+      with:
+        path: src/git.git
+        key: git-src
+        restore-keys: |
+          git-src
+    - name: Decode and import Code Signing Certificate
+      env:
+        CODESIGN_P12: ${{ secrets.CODESIGN_P12 }}
+        INSTALLER_P12: ${{ secrets.INSTALLER_P12 }}
+        P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+      run: ./load-keychain.zsh -c CODESIGN_P12 -i INSTALLER_P12 -p P12_PASSWORD -k build.keychain $GITHUB_ENV
+    - name: Build and sign package
+      env:
+        CODE_SIGNING_IDENTITY: ${{ env.CODE_SIGNING_IDENTITY }}
+        PKG_SIGNING_IDENTITY: ${{ env.PKG_SIGNING_IDENTITY }}
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        RELEASE_ID: ${{ github.event.inputs.release_tag }}
+      run: ./build.zsh
+    - name: Attach Build Files to Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        RELEASE_ID: ${{ github.event.inputs.release_tag }}
+      run: gh release upload "$RELEASE_ID" --clobber dist/* 
+    - name: Save Git Source Cache
+      uses: actions/cache@v4
+      if: always() # Ensure cache is saved even if the build fails
+      with:
+        path: src/git.git
+        key: git-src

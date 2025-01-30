@@ -1,0 +1,6 @@
+/src/
+/build/
+/dist/
+.DS_Store
+build-props-local.sh
+

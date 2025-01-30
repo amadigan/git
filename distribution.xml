@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+    <title>Git GIT_VERSION</title>
+    <pkg-ref id="org.kernel.git"/>
+    <options customize="never" require-scripts="true" hostArchitectures="HOST_ARCH"/>
+    <volume-check>
+        <allowed-os-versions>
+            <os-version min="MACOS_VERSION"/>
+        </allowed-os-versions>
+    </volume-check>
+    <welcome file="readme.html" mime-type="text/html"/>
+    <license file="license.txt" mime-type="text/plain"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="org.kernel.git"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="org.kernel.git" visible="false">
+        <pkg-ref id="org.kernel.git"/>
+    </choice>
+    <pkg-ref id="org.kernel.git" version="GIT_VERSION" onConclusion="none">git-component.pkg</pkg-ref>
+</installer-gui-script>
