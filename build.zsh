@@ -386,6 +386,7 @@ build_pkg() {
 	log_info "Building component package"
 	pkgbuild  --identifier "org.kernel.git" --version "${build_version}" \
 	 --install-location "/usr/local" --root git --scripts scripts --min-os-version "${macos_version}" \
+	 --compression latest \
 	  "${project_root}/build/git-component.pkg"
 
 	private hostArch="${CPUTYPE}"
