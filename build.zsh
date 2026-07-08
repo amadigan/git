@@ -77,6 +77,8 @@ typeset -g intel_root="${project_root}/build/git-intel"
 
 build_intel() {
 	log_info "Building Intel version"
+	private rust_target="x86_64-apple-darwin"
+	rustup target add "${rust_target}" || log_error "Failed to add rust target ${rust_target}"
 	export LDFLAGS="-arch x86_64 -mmacosx-version-min=${macos_version}"
 	export CFLAGS="-arch x86_64 -mmacosx-version-min=${macos_version}"
 	builtin rm -rf "${project_root}/src/intel" "${intel_root}"
@@ -89,13 +91,16 @@ build_intel() {
 	./configure --prefix=/usr/local --with-gitconfig="/usr/local/etc/gitconfig"
 
 	log_info "Building git for Intel"
-	make DESTDIR="${intel_root}" -j ${cpus} all strip install 2>&1
+	private target_dir="target/${rust_target}/release"
+	private cargo_args="--quiet --release --target ${rust_target}"
+	make DESTDIR="${intel_root}" RUST_TARGET_DIR="${target_dir}" CARGO_ARGS="${cargo_args}" -j ${cpus} all strip install 2>&1
+
 	builtin mv "${intel_root}"/usr/local/* "${intel_root}"
 	builtin rm -rf "${intel_root}/usr"
 	cd contrib/credential/osxkeychain
 
 	log_info "Building git-credential-osxkeychain for Intel"
-	make 2>&1
+	make RUST_TARGET_DIR="${target_dir}" CARGO_ARGS="${cargo_args}" 2>&1
 	strip -x git-credential-osxkeychain 2>&1
 	builtin ln -nf git-credential-osxkeychain "${intel_root}/libexec/git-core/" 2>&1
 	log_info "Intel build complete"
@@ -104,7 +109,7 @@ build_intel() {
 
 build_git() {
 	log_info "Building git for ${CPUTYPE}"
-	export LD_FLAGS="-mmacosx-version-min=${macos_version}"
+	export LDFLAGS="-mmacosx-version-min=${macos_version}"
 	export CFLAGS="-mmacosx-version-min=${macos_version}"
 
 	private dest="${project_root}/build/git"
