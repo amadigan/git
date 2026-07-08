@@ -11,12 +11,12 @@ permissions:
   contents: write
 jobs:
   build-git:
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - name: Cache Git Source
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: src/git.git
         key: git-src
@@ -43,7 +43,7 @@ jobs:
         RELEASE_ID: ${{ github.event.inputs.release_tag }}
       run: gh release upload "$RELEASE_ID" --clobber dist/* 
     - name: Save Git Source Cache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       if: always() # Ensure cache is saved even if the build fails
       with:
         path: src/git.git
